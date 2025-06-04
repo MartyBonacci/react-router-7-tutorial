@@ -1,6 +1,6 @@
-export default function Index() {
+export default function Home() {
     return (
-        <p id="zero-state">
+        <p id="index-page">
             This is a demo for React Router.
             <br />
             Check out{" "}
