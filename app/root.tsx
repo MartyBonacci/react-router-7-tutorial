@@ -5,7 +5,7 @@ import {
     isRouteErrorResponse, redirect
 } from "react-router";
 import type { Route } from "./+types/root";
-import appStylesHref from "./app.css?url";
+import tailwindStylesHref from "./tailwind.css?url";
 import { createEmptyContact } from "./data";
 
 export async function action() {
@@ -26,7 +26,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="stylesheet" href={appStylesHref} />
+        <link rel="stylesheet" href={tailwindStylesHref} />
       </head>
       <body>
         {children}
@@ -56,12 +56,12 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main id="error-page">
-      <h1>{message}</h1>
-      <p>{details}</p>
+    <main className="flex flex-col items-center justify-center min-h-screen p-8">
+      <h1 className="text-4xl font-bold mb-4">{message}</h1>
+      <p className="text-gray-600 mb-4">{details}</p>
       {stack && (
-        <pre>
-          <code>{stack}</code>
+        <pre className="bg-gray-100 p-4 rounded-lg overflow-auto max-w-full">
+          <code className="text-sm">{stack}</code>
         </pre>
       )}
     </main>
@@ -70,9 +70,9 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
 export function HydrateFallback() {
   return (
-      <div id="loading-splash">
-        <div id="loading-splash-spinner" />
-        <p>Loading, please wait...</p>
+      <div className="fixed inset-0 flex flex-col items-center justify-center">
+        <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mb-4" />
+        <p className="text-gray-600">Loading, please wait...</p>
       </div>
   );
 }

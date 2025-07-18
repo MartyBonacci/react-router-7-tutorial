@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .loading {
+    opacity: 0.25;
+    transition: opacity 200ms;
+    transition-delay: 200ms;
+  }
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @keyframes progress {
+    0% {
+      @apply bg-gray-200;
+    }
+    50% {
+      background: hsla(224, 98%, 58%, 0.5);
+    }
+    100% {
+      @apply bg-gray-200;
+    }
+  }
+}

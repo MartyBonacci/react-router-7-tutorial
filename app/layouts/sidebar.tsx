@@ -1,7 +1,7 @@
 import {Form, Link, NavLink, Outlet, useNavigation, useSubmit} from "react-router";
 import {getContacts} from "../data";
 import type {Route} from "./+types/sidebar";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 
 export async function loader({request}: Route.LoaderArgs) {
     const url = new URL(request.url)
@@ -12,6 +12,7 @@ export async function loader({request}: Route.LoaderArgs) {
 
 export default function SidebarLayout({loaderData,}: Route.ComponentProps) {
     const {contacts, q} = loaderData;
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const navigation = useNavigation();
     const submit = useSubmit();
@@ -29,81 +30,123 @@ export default function SidebarLayout({loaderData,}: Route.ComponentProps) {
     }, [q]);
 
     return (
-        <>
-            <div id="sidebar">
-                <h1>
-                    <Link to="about">React Router Contacts</Link>
-                </h1>
-                <div>
-                    <Form
-                        id="search-form"
-                        onChange={(event) => {
-                            const isFirstSearch = q === null;
-                            submit(event.currentTarget, {
-                            replace: !isFirstSearch,
-                        });
-                        }}
-                        role="search">
-                        <input
-                            aria-label="Search contacts"
-                            className={searching ? "loading" : ""}
-                            defaultValue={q || ""}
-                            id="q"
-                            name="q"
-                            placeholder="Search"
-                            type="search"
-                        />
-                        <div
-                            aria-hidden
-                            hidden={!searching}
-                            id="search-spinner"
-                        />
-                    </Form>
-                    <Form method="post">
-                        <button type="submit">New</button>
-                    </Form>
+        <div className="flex h-screen bg-white">
+            {/* Mobile menu button */}
+            <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-100 hover:bg-gray-200 lg:hidden"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={sidebarOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+                </svg>
+            </button>
+
+            {/* Sidebar */}
+            <div className={`fixed inset-y-0 left-0 z-40 w-80 bg-gray-50 border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className="flex flex-col h-full">
+                    <h1 className="flex items-center text-base font-medium px-8 py-4 border-t border-gray-200">
+                        <svg className="mr-4" width='35' height='21' viewBox='0 0 602 360' fill='none'>
+                            <path d='M481.36 180C481.36 196.572 474.639 211.572 463.757 222.42C452.875 233.28 437.845 240 421.24 240C404.635 240 389.605 246.708 378.735 257.568C367.853 268.428 361.12 283.428 361.12 300C361.12 316.572 354.399 331.572 343.517 342.42C332.635 353.28 317.605 360 301 360C284.395 360 269.365 353.28 258.495 342.42C247.613 331.572 240.88 316.572 240.88 300C240.88 283.428 247.613 268.428 258.495 257.568C269.365 246.708 284.395 240 301 240C317.605 240 332.635 233.28 343.517 222.42C354.399 211.572 361.12 196.572 361.12 180C361.12 146.856 334.21 120 301 120C284.395 120 269.365 113.28 258.495 102.42C247.613 91.572 240.88 76.572 240.88 60C240.88 43.428 247.613 28.428 258.495 17.568C269.365 6.708 284.395 0 301 0C334.21 0 361.12 26.856 361.12 60C361.12 76.572 367.853 91.572 378.735 102.42C389.605 113.28 404.635 120 421.24 120C454.45 120 481.36 146.856 481.36 180Z' fill='#F44250'/>
+                            <path d='M240.88 180C240.88 146.862 213.964 120 180.76 120C147.557 120 120.64 146.862 120.64 180C120.64 213.137 147.557 240 180.76 240C213.964 240 240.88 213.137 240.88 180Z' fill='#121212'/>
+                            <path d='M120.64 300C120.64 266.863 93.7234 240 60.52 240C27.3167 240 0.400024 266.863 0.400024 300C0.400024 333.138 27.3167 360 60.52 360C93.7234 360 120.64 333.138 120.64 300Z' fill='#121212'/>
+                            <path d='M601.6 300C601.6 266.863 574.683 240 541.48 240C508.277 240 481.36 266.863 481.36 300C481.36 333.138 508.277 360 541.48 360C574.683 360 601.6 333.138 601.6 300Z' fill='#121212'/>
+                        </svg>
+                        <Link to="about" className="text-blue-500 hover:underline">React Router Contacts</Link>
+                    </h1>
+                    <div className="flex items-center gap-2 px-8 py-4 border-b border-gray-200">
+                        <Form
+                            className="relative flex-1"
+                            id="search-form"
+                            onChange={(event) => {
+                                const isFirstSearch = q === null;
+                                submit(event.currentTarget, {
+                                replace: !isFirstSearch,
+                            });
+                            }}
+                            role="search">
+                            <input
+                                aria-label="Search contacts"
+                                className={`w-full text-base rounded-lg border-0 px-8 py-2 shadow-sm ring-1 ring-gray-200 hover:ring-gray-300 focus:ring-2 focus:ring-blue-500 ${searching ? "loading" : ""}`}
+                                defaultValue={q || ""}
+                                id="q"
+                                name="q"
+                                placeholder="Search"
+                                type="search"
+                                style={{
+                                    backgroundImage: searching ? 'none' : `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='%23999' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' /%3E%3C/svg%3E")`,
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundPosition: '0.625rem 0.75rem',
+                                    backgroundSize: '1rem'
+                                }}
+                            />
+                            {searching && (
+                                <div
+                                    className="absolute left-2.5 top-3 w-4 h-4 animate-spin"
+                                    style={{
+                                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%23000' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M20 4v5h-.582m0 0a8.001 8.001 0 00-15.356 2m15.356-2H15M4 20v-5h.581m0 0a8.003 8.003 0 0015.357-2M4.581 15H9' /%3E%3C/svg%3E")`
+                                    }}
+                                />
+                            )}
+                        </Form>
+                        <Form method="post">
+                            <button type="submit" className="text-base font-medium text-blue-500 px-3 py-2 rounded-lg shadow-sm ring-1 ring-gray-200 hover:ring-gray-300 bg-white">New</button>
+                        </Form>
+                    </div>
+                    <nav className="flex-1 overflow-auto px-8 py-4">
+                        {contacts.length ? (
+                            <ul className="space-y-1">
+                                {contacts.map((contact) => (
+                                    <li key={contact.id}>
+                                        <NavLink
+                                            className={({isActive, isPending}) =>
+                                                `flex items-center justify-between overflow-hidden whitespace-pre px-2 py-2 rounded-lg text-inherit no-underline gap-4 transition-colors ${
+                                                    isActive
+                                                        ? "bg-blue-500 text-white"
+                                                        : isPending
+                                                            ? "animate-pulse bg-gray-200"
+                                                            : "hover:bg-gray-200"
+                                                }`
+                                            }
+                                            to={`contacts/${contact.id}`}
+                                            onClick={() => setSidebarOpen(false)}
+                                        >
+                                            {contact.first || contact.last ? (
+                                                <>
+                                                    {contact.first} {contact.last}
+                                                </>
+                                            ) : (
+                                                <i className="text-gray-500">No Name</i>
+                                            )}
+                                            {contact.favorite ? (
+                                                <span className="text-yellow-500">★</span>
+                                            ) : null}
+                                        </NavLink>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>
+                                <i className="text-gray-500">No contacts</i>
+                            </p>
+                        )}
+                    </nav>
                 </div>
-                <nav>
-                    {contacts.length ? (
-                        <ul>
-                            {contacts.map((contact) => (
-                                <li key={contact.id}>
-                                    <NavLink
-                                        className={({isActive, isPending}) =>
-                                            isActive
-                                                ? "active"
-                                                : isPending
-                                                    ? "pending"
-                                                    : ""
-                                        }
-                                        to={`contacts/${contact.id}`}
-                                    >{contact.first || contact.last ? (
-                                        <>
-                                            {contact.first} {contact.last}
-                                        </>
-                                    ) : (
-                                        <i>No Name</i>
-                                    )}
-                                        {contact.favorite ? (
-                                            <span>★</span>
-                                        ) : null}
-                                    </NavLink>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>
-                            <i>No contacts</i>
-                        </p>
-                    )}
-                </nav>
             </div>
+
+            {/* Mobile overlay */}
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+
+            {/* Main content */}
             <div
-                className={navigation.state === "loading" && !searching ? "loading" : ""}
-                id="detail"
+                className={`flex-1 p-8 overflow-auto ${navigation.state === "loading" && !searching ? "loading" : ""}`}
             >
                 <Outlet/>
             </div>
-        </>
+        </div>
     );
 }
