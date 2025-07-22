@@ -2,16 +2,41 @@ import {Form, useFetcher} from "react-router";
 import {type ContactRecord, updateContact} from "../data";
 import { getContact } from "../data";
 import type { Route } from "./+types/contact";
+import { favoriteToggleSchema } from "../lib/schemas/contact";
 
 export async function action({ params, request,}: Route.ActionArgs) {
     const formData = await request.formData();
-    return updateContact(params.contactId, {
-        favorite: formData.get("favorite") === "true",
-    });
+    const contactId = params.contactId;
+    
+    if (!contactId || isNaN(Number(contactId))) {
+        return { success: false, error: "Invalid contact ID" };
+    }
+    
+    try {
+        const validatedData = favoriteToggleSchema.parse({
+            favorite: formData.get("favorite"),
+        });
+
+        await updateContact(contactId, {
+            favorite: validatedData.favorite,
+        });
+        
+        return { success: true };
+    } catch (error) {
+        if (error instanceof Error) {
+            return { success: false, error: error.message };
+        }
+        return { success: false, error: "An error occurred" };
+    }
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-    const contact = await getContact(params.contactId);
+    const contactId = params.contactId;
+    if (!contactId || isNaN(Number(contactId))) {
+        throw new Response("Not Found", { status: 404 });
+    }
+    
+    const contact = await getContact(contactId);
     if (!contact) {
         throw new Response("Not Found", { status: 404 });
     }
@@ -25,9 +50,9 @@ export default function Contact({ loaderData, }: Route.ComponentProps) {
         <div className="flex flex-col sm:flex-row max-w-2xl">
             <div className="flex-shrink-0 mb-4 sm:mb-0">
                 <img
-                    alt={`${contact.first} ${contact.last} avatar`}
+                    alt={`${contact.firstName} ${contact.lastName} avatar`}
                     key={contact.avatar}
-                    src={contact.avatar}
+                    src={contact.avatar || undefined}
                     className="w-48 h-48 bg-gray-300 rounded-3xl object-cover mx-auto sm:mr-8"
                 />
             </div>
@@ -35,9 +60,9 @@ export default function Contact({ loaderData, }: Route.ComponentProps) {
             <div className="flex-1 text-center sm:text-left">
                 <h1 className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-3xl font-bold mb-0">
                     <span className="flex-1">
-                        {contact.first || contact.last ? (
+                        {contact.firstName || contact.lastName ? (
                             <>
-                                {contact.first} {contact.last}
+                                {contact.firstName} {contact.lastName}
                             </>
                         ) : (
                             <i className="text-gray-500">No Name</i>

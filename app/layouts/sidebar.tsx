@@ -110,9 +110,9 @@ export default function SidebarLayout({loaderData,}: Route.ComponentProps) {
                                             to={`contacts/${contact.id}`}
                                             onClick={() => setSidebarOpen(false)}
                                         >
-                                            {contact.first || contact.last ? (
+                                            {contact.firstName || contact.lastName ? (
                                                 <>
-                                                    {contact.first} {contact.last}
+                                                    {contact.firstName} {contact.lastName}
                                                 </>
                                             ) : (
                                                 <i className="text-gray-500">No Name</i>

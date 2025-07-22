@@ -88,10 +88,9 @@ Build a modern, production-ready contacts management application that serves as 
 - **Zod** - API validation
 
 ### Infrastructure
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-- **PostgreSQL** - Database container
-- **Node** - Application container
+- **Neon** - Managed PostgreSQL database
+- **Drizzle ORM** - Type-safe database toolkit
+- **Environment Variables** - Database configuration
 
 ### Development Tools
 - **TypeScript** - Static typing
@@ -112,9 +111,9 @@ Build a modern, production-ready contacts management application that serves as 
    - Package manager (comes with Node.js)
    - For pnpm: `npm install -g pnpm`
 
-3. **Docker Desktop**
-   - For containerized development
-   - Install from: https://www.docker.com/products/docker-desktop/
+3. **Neon Account**
+   - Managed PostgreSQL database
+   - Sign up at: https://neon.tech
 
 4. **Git**
    - Version control
@@ -220,11 +219,11 @@ Build a modern, production-ready contacts management application that serves as 
    - Lightweight and performant
    - Great developer experience
 
-3. **Docker Compose**
-   - Consistent development environment
-   - Easy setup for new developers
-   - Production-like local environment
-   - Isolated dependencies
+3. **Neon + Drizzle**
+   - Managed PostgreSQL with automatic scaling
+   - Type-safe database operations
+   - Zero-config development setup
+   - Production-ready from day one
 
 4. **Zod**
    - Runtime type validation
